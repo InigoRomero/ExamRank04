@@ -4,19 +4,13 @@
 #include <string.h>
 #include <stdio.h>
 
-#define SIDE_OUT	0
-#define SIDE_IN		1
-
-#define STDIN		0
-#define STDOUT		1
-
 typedef struct	s_command
 {
 	char			**argv;
 	char			**argvAux;
 	int				type;
-	int				pipes[2];
 	int				type_previus;
+	int				save_in;
 }				t_command;
 
 int ft_strlen(char *str)
@@ -121,31 +115,20 @@ int main(int argc, char **argv, char **env)
 			ft_cd(argv);
 		else
 		{
-							printf("type: %d\n", stru.type);
-				printf("PREV: %d\n", stru.type_previus);
-				printf("comando: %s\n", stru.argv[0]);
-				printf("argumento: %s\n", stru.argv[1]);
 			if (stru.type == 2)
 			{
-				printf("HHola\n");
-				pipe_open = 1;
-				if (pipe(stru.pipes))
-					return (exit_fatal());
-			}
-			if (stru.type_previus == 2 && stru.type != 2)
-			{
-				printf("LOco\n");
 				pipe_open = 1;
 				if (pipe(pipes))
 					return (exit_fatal());
 			}
 			pid = fork();
+			if (pid < 0)
+				exit_fatal();
 			if (pid == 0)
 			{
-				if (stru.type == 2 && dup2(stru.pipes[SIDE_IN], STDOUT) < 0)
-					return (exit_fatal());
-				if (stru.type_previus == 2 && stru.type != 2 && dup2(pipes[SIDE_OUT], STDIN) < 0)
-					return (exit_fatal());
+				
+				if (pipe_open)
+					dup2(pipes[1], 1);
 				if ((ret = execve(stru.argv[0], stru.argv, env)) < 0)
 				{
 					show_error("error: cannot execute ");
@@ -157,14 +140,9 @@ int main(int argc, char **argv, char **env)
 				waitpid(pid, &status, 0);
 				if (pipe_open)
 				{
-					close(stru.pipes[SIDE_IN]);
-					if (stru.type == 0 || stru.type == 1)
-						close(stru.pipes[SIDE_OUT]);
-				}
-				if (stru.type_previus == 2 && stru.type != 2)
-				{
-										printf("mundo\n");
-					close(pipes[SIDE_OUT]);
+			        dup2(pipes[0], 0);
+					close(pipes[0]);
+					close(pipes[1]);
 				}
 			}
 		}
