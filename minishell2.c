@@ -56,12 +56,12 @@ int ft_cd(char **argv)
 	int length = 0;
 	while(argv[length])
 		length++;
-	if (length < 2)
+	if (length < 1)
 		ret = show_error("error: cd: bad arguments\n");
-	else if (chdir(argv[2]))
+	else if (chdir(argv[1]))
 	{
 		ret = show_error("error: cd: cannot change directory to ");
-		show_error(argv[2]);
+		show_error(argv[1]);
 		show_error("\n");
 	}
 	return (ret);
@@ -111,46 +111,43 @@ int main(int argc, char **argv, char **env)
 		pipe_open = 0;
 		stru.type = 0;
 		i = parse_command(&stru, i);
-		if (strcmp("cd", stru.argv[0]) == 0)
-			ft_cd(argv);
-		else
+		if (stru.type == 2)
 		{
-			if (stru.type == 2)
-			{
-				pipe_open = 1;
-				if (pipe(pipes))
-					return (exit_fatal());
-			}
-			pid = fork();
-			if (pid < 0)
-				exit_fatal();
-			if (pid == 0)
-			{
-				
-				if (pipe_open)
-					dup2(pipes[1], 1);
-				if ((ret = execve(stru.argv[0], stru.argv, env)) < 0)
-				{
-					show_error("error: cannot execute ");
-					show_error(stru.argv[0]);
-					show_error("\n");
-				}
-				exit(ret);
-			}else{
-				waitpid(pid, &status, 0);
-				if (pipe_open)
-				{
-			        dup2(pipes[0], 0);
-					close(pipes[0]);
-					close(pipes[1]);
-				}
-			}
+			pipe_open = 1;
+			if (pipe(pipes))
+				return (exit_fatal());
 		}
-		int x = 0;
-		while (stru.argv[x])
-			free(stru.argv[x++]);
-		free(stru.argv);
-		if (stru.type == 0)
-			break ;
+		pid = fork();
+		if (pid < 0)
+			exit_fatal();
+		if (pid == 0)
+		{
+			
+			if (pipe_open)
+				dup2(pipes[1], 1);
+			if (strcmp("cd", stru.argv[0]) == 0)
+				ft_cd(stru.argv);
+			else if ((ret = execve(stru.argv[0], stru.argv, env)) < 0)
+			{
+				show_error("error: cannot execute ");
+				show_error(stru.argv[0]);
+				show_error("\n");
+			}
+			exit(ret);
+		}else{
+			waitpid(pid, &status, 0);
+			if (pipe_open)
+			{
+				dup2(pipes[0], 0);
+				close(pipes[0]);
+				close(pipes[1]);
+		}
+	}
+	int x = 0;
+	while (stru.argv[x])
+		free(stru.argv[x++]);
+	free(stru.argv);
+	if (stru.type == 0)
+		break ;
 	}
 }
