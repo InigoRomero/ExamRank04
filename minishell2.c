@@ -9,8 +9,6 @@ typedef struct	s_command
 	char			**argv;
 	char			**argvAux;
 	int				type;
-	int				type_previus;
-	int				save_in;
 }				t_command;
 
 int ft_strlen(char *str)
@@ -69,7 +67,6 @@ int ft_cd(char **argv)
 
 int	parse_command(t_command *stru, int i)
 {
-	char **dest;
 	int aux = i, x = 0;
 
 	while (stru->argvAux[i] && strcmp(";", stru->argvAux[i]) != 0 && strcmp("|", stru->argvAux[i]) != 0)
@@ -89,7 +86,6 @@ int	parse_command(t_command *stru, int i)
 	if (stru->argvAux[i] && strcmp( "|", stru->argvAux[i]) == 0)
 	{
 		stru->type = 2;
-		stru->type_previus = 2;
 		i++;
 	}
 	return (i);
@@ -99,13 +95,12 @@ int main(int argc, char **argv, char **env)
 {
 	int ret;
 	int status;
-	int i = 1, x = 0;
+	int i = 1;
 	int				pipes[2];
 	pid_t	pid;
 	t_command stru;
 	int		pipe_open;
 
-	stru.type_previus = 0;
 	stru.argvAux = argv;
 	while (i < argc){
 		pipe_open = 0;
