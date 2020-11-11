@@ -1,6 +1,5 @@
 #include <unistd.h>
 #include <stdlib.h>
-#include <sys/wait.h>
 #include <string.h>
 
 typedef struct	s_command{
