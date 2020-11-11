@@ -84,12 +84,9 @@ int ft_cd (char **argv)
 
 int main (int argc, char **argv, char **env)
 {
-	int pipes[2];
-	int pipe_open;
+	int pipes[2], pipe_open, status, i = 1;
 	pid_t pid;
-	int status;
 	t_command stru;
-	int i = 1;
 
 	stru.argvaux = argv;
 	while (i < argc)
