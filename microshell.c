@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <string.h>
-#include <stdio.h>
+
 typedef struct	s_command{
 	int type;
 	char **argv;
@@ -60,15 +60,9 @@ int parse_command(t_command *stru, int i)
 	}
 	stru->argv[x] = 0;
 	if (stru->argvaux[i] && strcmp(";", stru->argvaux[i]) == 0)
-	{
 		stru->type = 1;
-		i++;
-	}
 	if (stru->argvaux[i] && strcmp( "|", stru->argvaux[i]) == 0)
-	{
 		stru->type = 2;
-		i++;
-	}
 	return (i);
 }
 
@@ -140,5 +134,6 @@ int main (int argc, char **argv, char **env)
 		free(stru.argv);
 		if (stru.type == 0)
 			break ;
+		i++;
 	}
 }
