@@ -50,7 +50,7 @@ void	ft_cd(char **argv)
 	int i = 0;
 	while (argv[i])
 		i++;
-	if (i < 1)
+	if (i < 2)
 		ft_show_error("error: cd: bad arguments\n");
 	if (chdir(argv[1]))
 	{
