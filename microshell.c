@@ -52,7 +52,7 @@ void	ft_cd(char **argv)
 		i++;
 	if (i < 2)
 		ft_show_error("error: cd: bad arguments\n");
-	if (chdir(argv[1]))
+	else if (chdir(argv[1]))
 	{
 		ft_show_error("error: cd: cannot change directory to ");
 		ft_show_error(argv[1]);
